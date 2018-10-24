@@ -16,6 +16,7 @@ startGame = 0 # For starting, pausing and ending game
 # 2 for end
 # 3 for about game
 # 4 for about developer
+# 5 for rules
 
 isSoundp = True # for sound on start screen
 isSoundg = True # for sound on game screen
@@ -119,9 +120,9 @@ play_x = [350,350, 350, 350, 350]
 game_x = [650, 650, 650]
 play_y = [370, 420, 470, 520, 570]
 game_y = [260, 310, 360]
-play_name = ["Play Game", "Settings", "About Game", "Developer", "Quit"]
+play_name = ["Play Game", "Rules", "About Game", "Developer", "Quit"]
 game_name = ["RESET", "HOME", "QUIT"]
-play_hover_name = ["Play Game", "Settings", "About Game", "Developer", "Quit"]
+play_hover_name = ["Play Game", "Rules", "About Game", "Developer", "Quit"]
 game_hover_name = ["RESET", "HOME", "QUIT"]
 randomGenerated = False # generate random number at start for player turn
 
@@ -130,7 +131,7 @@ gameDisplay.fill(white)
 
 def gameName(i, j):
     # show background image
-    background = pygame.image.load('background3.jpg')
+    background = pygame.image.load('background2.jpg')
     gameDisplay.blit(background, (0, 0))
 
     fontObj = pygame.font.Font('font/blambot_youmurderer-bb/youmurdererbb_reg.otf', 120)
@@ -143,9 +144,9 @@ def fullGameName(i):
     gameName(450, 70) # showing game name
 
     fontObj = pygame.font.Font('font/kc-fonts_black-asylum/BlackAsylumDEMO-KCFonts.ttf', i)
-    textSurface = fontObj.render("YOU ARE GOING DOWN", True, black)
+    textSurface = fontObj.render("YOU ARE GOING DOWN", True, (138,0,0))
     textRect = textSurface.get_rect()
-    textRect.center = (450, 90+220+i)
+    textRect.center = (450, 80+220+i)
     gameDisplay.blit(textSurface, textRect) # show full game name
 
 def showLogo(ind, factor):
@@ -156,7 +157,7 @@ def init_game():
     gameMusic.Channel(0).play(gameMusic.Sound('sound/start_sound.wav'), loops=-1) # loading startin sound
     gameMusic.Channel(0).set_volume(gameVolume[0])
     #gameMusic1.music.play()
-    for i in range(0,455, 25):
+    for i in range(0,480, 30):
         gameName(i, 70)
         # clock & updating
         fpsClock.tick(FPS)
@@ -178,7 +179,7 @@ def init_game():
 
 # set all button
 def buttonRendering1(i):
-    gameName(450, 70) # showing game name
+    gameName(490, 70) # showing game name
     fullGameName(35) # showing full game name
     showLogo(10,0) # showing game logo
     playText = pygame.font.Font('font/sansation/Sansation-BoldItalic.ttf',25)
@@ -256,6 +257,8 @@ def buttonRendering(ind, ch):
             gameMusic.Channel(1).play(gameMusic.Sound('sound/play_game.wav'))
             gameMusic.Channel(0).play(gameMusic.Sound('sound/game_sound.wav'), loops=-1)
             gameMusic.Channel(0).set_volume(gameVolume[0])
+        elif ind == 1:
+            startGame=5 # show rules of game
         elif ind == 2:
             startGame = 3 # show about game
         elif ind == 3:
@@ -495,18 +498,26 @@ def standingPlayer(atPlace):
         gameDisplay.blit(player[1][playerDirection[1]], (playerGraphicalPosition[1][0], playerGraphicalPosition[1][1])) # boy at position
 
 def updatePlayerScore():
-    gameDisplay.blit(player[0][1], (400, 605)) # girl at position
-    gameDisplay.blit(player[1][1], (200, 605)) # boy at position
+    
+    if playerTurn == 0:
+        pygame.draw.rect(gameDisplay, red, (390, 605, 45+65, 50))
+        pygame.draw.rect(gameDisplay, black, (395, 610, 35+65, 45))
+    else:
+        pygame.draw.rect(gameDisplay, red, (190, 605, 45+65, 50))
+        pygame.draw.rect(gameDisplay, black, (195, 610, 35+65, 45))
+    # showing players
+    gameDisplay.blit(player[0][1], (400, 613)) # girl at position
+    gameDisplay.blit(player[1][1], (200, 613)) # boy at position
 
     fontObj = pygame.font.Font('font/sansation/Sansation-BoldItalic.ttf', 30)
-    textSurface = fontObj.render(" -> " + str(playerPosition[1]), True, white, black)
+    textSurface = fontObj.render(str(playerPosition[1]), True, white, black)
     textRect = textSurface.get_rect()
-    textRect.center = (300, 625)
+    textRect.center = (270, 625)
     gameDisplay.blit(textSurface, textRect) # show number on board
 
-    textSurface = fontObj.render(" -> " + str(playerPosition[0]), True, white, black)
+    textSurface = fontObj.render(str(playerPosition[0]), True, white, black)
     textRect = textSurface.get_rect()
-    textRect.center = (500, 625)
+    textRect.center = (470, 625)
     gameDisplay.blit(textSurface, textRect) # show number on board
 
 # Print snake lader board
@@ -750,6 +761,7 @@ def playerMove(diceCount):
     global playerPosition
     global playerGraphicalPosition
     global playerDirection
+    global prevDiceNum
 
     if (playerPosition[playerTurn] == 0) and (diceCount+1 not in [1,6]):
         # sound for laugh player to channel 4
@@ -759,6 +771,9 @@ def playerMove(diceCount):
         else:
             playerTurn = 0
         return
+    elif (playerPosition[playerTurn] == 0) and (diceCount+1 in [1,6]):
+        diceCount = 0 # 0 - 5 range
+        prevDiceNum = 0
     
     if playerPosition[playerTurn]+diceCount+1 > 100:
         # sound for laugh player to channel 4
@@ -856,8 +871,8 @@ def gameFinished():
     global playerTurn
     global randomGenerated
     
-    pygame.draw.rect(gameDisplay, black, (135, 90, 425, 220))
-    pygame.draw.rect(gameDisplay, forestgreen, (145, 100, 405, 200))
+    pygame.draw.rect(gameDisplay, black, (135, 90, 435, 220))
+    pygame.draw.rect(gameDisplay, mate, (145, 100, 415, 200))
 
     # showing player's description on board
     fontObj = pygame.font.Font('font/sansation/Sansation-BoldItalic.ttf', 30)
@@ -936,6 +951,41 @@ def playerStartScreen():
     textRect.center = (350, 250)
     gameDisplay.blit(textSurface, textRect)
 
+# rules of the game
+def rules():
+    rules = [
+        '1. Player will start moving only if 1 or 6 on the dice',
+        '2. Role the dice by clicking on it!',
+        '3. That\'s it, Play the game']
+    # show background image
+    background = pygame.image.load('background2.jpg')
+    gameDisplay.blit(background, (0, 0))
+
+    # showing game name
+    fontObj = pygame.font.Font('font/FFF-Tusj/FFF_Tusj.ttf', 60)
+    textSurface = fontObj.render("NO MERCY!", True, red)
+    textRect = textSurface.get_rect()
+    textRect.center = (455,55)
+    gameDisplay.blit(textSurface, textRect) # show game name
+
+    start_with = 300
+    for index, line in enumerate(rules):
+        fontObj = pygame.font.Font('font/sansation/Sansation-Regular.ttf',20)
+        textSurface = fontObj.render(line, True, black, white)
+        textRect = textSurface.get_rect()
+        textRect.center = ((100+800)/2, 150+(index*30))
+        gameDisplay.blit(textSurface, textRect) # show full game name
+        
+    playText = pygame.font.Font('font/sansation/Sansation-BoldItalic.ttf',30)
+    pygame.draw.rect(gameDisplay, button , (680, 580 , 200, 40))
+    pygame.draw.rect(gameDisplay, darkgray, (680, 580+40, 203, 3))
+    pygame.draw.rect(gameDisplay, darkgray, (680+200, 580, 3, 40))
+    textSurf = playText.render("Back", True, red)
+    textRect = textSurf.get_rect()
+    textRect.center = (680+100, 580 + 20)
+    gameDisplay.blit(textSurf, textRect)
+
+    
 # about developer information
 def aboutDeveloper():
     about_developer = [
@@ -1168,6 +1218,28 @@ while startGame != 2:
                 # clock & updating
                 fpsClock.tick(FPS)
                 pygame.display.update()
+        elif (event.type == pygame.MOUSEBUTTONDOWN) and (startGame == 5):
+            mouse = pygame.mouse.get_pos() # getting mouse position
+            if (680+200 > mouse[0] > 680) and \
+               (580+200 > mouse[1] > 580):
+
+                #playing sound
+                gameMusic.Channel(1).play(gameMusic.Sound('sound/button_press.wav'))
+                
+                startGame = 0 # game at init position
+                
+                playText = pygame.font.Font('font/sansation/Sansation-BoldItalic.ttf',30)
+                pygame.draw.rect(gameDisplay, button , (680, 580 , 200, 40))
+                pygame.draw.rect(gameDisplay, gray, (680, 580+40, 203, 3))
+                pygame.draw.rect(gameDisplay, gray, (680+200, 580, 3, 40))
+                textSurf = playText.render("Back", True, red)
+                textRect = textSurf.get_rect()
+                textRect.center = (680+100, 580 + 20)
+                gameDisplay.blit(textSurf, textRect)
+
+                # clock & updating
+                fpsClock.tick(FPS)
+                pygame.display.update()
                 
     if startGame == 3:
         aboutGame() # show about game
@@ -1175,8 +1247,14 @@ while startGame != 2:
         fpsClock.tick(FPS)
         pygame.display.update()
         continue
-    if startGame == 4:
+    elif startGame == 4:
         aboutDeveloper() # show about game
+        # clock & updating
+        fpsClock.tick(FPS)
+        pygame.display.update()
+        continue
+    elif startGame == 5:
+        rules() # show rules of game
         # clock & updating
         fpsClock.tick(FPS)
         pygame.display.update()
