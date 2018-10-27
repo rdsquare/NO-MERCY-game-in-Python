@@ -6,7 +6,7 @@ snake & ladder game. You can download its source code from github by visiting
 						below link -
 https://github.com/rdsquare/NO-MERCY-game-in-Python
 
-![Alt text](No_Mercy/no_mercy.png?raw=true "Screenshot of NO Mercy")
+![Alt text](No_Mercy/no_mercy.PNG?raw=true "Screenshot of NO Mercy")
 
 This game is designed for entertainment purpose only and it used images freely
 available on internet (as it is not a proprietary game).
